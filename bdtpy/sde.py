@@ -5,7 +5,19 @@ from .base import BaseModel
 from .solvers import sde_solver
 
 class Oscillator1D(BaseModel):
-    def __init__(self, epsilon, sigma, T=5.0, dt=0.01):
+    """
+
+    1D Nonlinear oscillator of the form
+
+        dy = 1 + epsilon*cos(y) + sigma*dW
+
+    where
+        y(t) is the dynamic variable
+        epsilon is the damping term
+        sigma > 0 is the volatility of the noise
+    
+    """
+    def __init__(self, epsilon, sigma, T=10.0, dt=0.01):
         super().__init__(epsilon=epsilon, sigma=sigma, T=T, dt=dt)
         self.time_points = np.arange(0, self.T + self.dt, self.dt)
 
@@ -36,6 +48,20 @@ class Oscillator1D(BaseModel):
         plt.show()
 
 class Oscillator2D(BaseModel):
+    """
+    
+    Generate solutions to two coupled nonlinear oscillators 
+    with independent noise terms of the form
+
+        dy_1 = lambda*y_1 - omega*y_2 + sigma_1*dW_1
+        dy_2 = lambda*y_2 + omega*y_1 + sigma_2*dW_2
+
+    where
+        lambda is the bias
+        omega is the coupling constant
+        sigma > 0 is the volatility of the noise
+    
+    """
     def __init__(self, lam, omega, sigma1, sigma2, T=5.0, dt=0.01):
         super().__init__(lam=lam, omega=omega, sigma1=sigma1, sigma2=sigma2, T=T, dt=dt)
         self.time_points = np.arange(0, self.T + self.dt, self.dt)
@@ -77,7 +103,7 @@ class Oscillator2D(BaseModel):
             self.solve()
         
         plt.figure(figsize=(6, 5))
-        plt.plot(self.solution[:, 0], self.solution[:, 1], lw=1.0, alpha=1.0)
+        plt.scatter(self.solution[:, 0], self.solution[:, 1], lw=1.0, alpha=1.0)
         
         plt.title('Phase portrait')
         plt.xlabel('Y1')
@@ -100,7 +126,7 @@ class OrnsteinUhlenbeck(BaseModel):
 
     Notes
     =====
-    This system has n = 20
+    This system has n = 10
     """
     def __init__(self, theta, mu, sigma, n=10, T=2000, dt=1, solver='itoSRI2'):
         super().__init__(theta=theta, mu=mu, sigma=sigma, n=n, T=T, dt=dt, solver=solver)
@@ -141,8 +167,8 @@ class OrnsteinUhlenbeck(BaseModel):
         if not hasattr(self, 'solution'):
             self.solve()
         
-        plt.figure(figsize=(8, 8))
-        plt.plot(self.solution[0], self.solution[1], lw=1)
+        plt.figure(figsize=(6, 6))
+        plt.scatter(self.solution[0], self.solution[1], lw=1)
         plt.title('Phase Portrait')
         plt.xlabel('Y1')
         plt.ylabel('Y2')
